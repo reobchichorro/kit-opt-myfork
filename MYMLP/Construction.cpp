@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -15,64 +16,33 @@ typedef struct InsertionInfo_t {
 } InsertionInfo;
 
 void ILS::Construcao(Solution &solution, Data *data) {
-  vector<int> path;
+  list<int> elements; //= list<int>(data->getDimension());
+  for (int i=1; i<data->getDimension(); i++)
+    elements.push_back(i+1);
 
-  path.push_back(solution.sequence[0]);
-  path.push_back(solution.sequence[0]);
+  solution.sequence = vector<int>(data->getDimension()+1);
+  solution.sequence[0] = 1;
+  int lastSeqElement = 0;
 
-  solution.sequence.erase(solution.sequence.begin());
-  solution.sequence.pop_back();
+  double total_dist = 0.0; //Solution::calcCost(path, data);
+  
+  cout << "Construcao\n";
+  cout << solution.sequence[0] << " ";
+  while (!elements.empty()) {
+    auto it = std::min_element(elements.cbegin(), elements.cend(), [&](const int a, const int b) {
+      return data->getDistance(solution.sequence[lastSeqElement], a) < data->getDistance(solution.sequence[lastSeqElement], b);
+    });
 
-  double total_dist = Solution::calcCost(path, data);
-  double alpha;
-  double cost;
-  size_t selection;
+    lastSeqElement++;
+    solution.sequence[lastSeqElement] = *it;
 
-  size_t ik;
-  size_t kj;
-  size_t ij;
-
-  std::vector<InsertionInfo> vcost;
-
-  while (!solution.sequence.empty()) {
-    for (size_t i = 0; i < path.size() - 1; i++) {
-      // i = i
-      // j = i + 1
-      // k = k
-      for (size_t k = 0; k < solution.sequence.size(); k++) {
-        ik = data->getDistance(path[i], solution.sequence[k]);
-        kj = data->getDistance(solution.sequence[k], path[i + 1]);
-        ij = data->getDistance(path[i], path[i + 1]);
-        cost = ik + kj - ij;
-
-        vcost.push_back(
-            (InsertionInfo){.i = i, .j = i + 1, .k = k, .cost = cost});
-      }
-    }
-
-    std::sort(vcost.begin(), vcost.end(),
-              [](const InsertionInfo &a, const InsertionInfo &b) {
-                return a.cost < b.cost;
-              });
-
-    // bias towards begin
-    alpha = (double)rand() / RAND_MAX;
-    selection = rand() % ((size_t)ceil(alpha * vcost.size()));
-
-    total_dist += vcost[selection].cost;
-    path.insert(path.begin() + vcost[selection].j,
-                solution.sequence[vcost[selection].k]);
-    solution.sequence.erase(solution.sequence.begin() + vcost[selection].k);
-
-    vcost.clear();
+    cout << (*it) << " ";
+    elements.erase(it);
   }
 
-  if (total_dist < solution.cost) {
-    solution.sequence = path;
-    solution.cost = total_dist;
-  } else {
-    solution = Solution(data->getDimension(), data);
-  }
+  solution.sequence[data->getDimension()] = 1;
+  cout << solution.sequence[data->getDimension()] << " ";
+  cout << endl;
 }
 
 // LEGACY
