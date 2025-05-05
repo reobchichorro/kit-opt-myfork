@@ -1,14 +1,13 @@
 #pragma once
 #include "./Data.h"
 #include "./Solution.h"
-#include "Subsequence.h"
 #include "ILS.h"
 
 namespace ILS {
 
 Solution ILS(Data *data);
 
-void Construcao(Solution &solution, Data *data);
+void Construcao(Solution &solution, Data *data, const double alpha);
 
 void BuscaLocal(Solution &solution, Data *data);
 
