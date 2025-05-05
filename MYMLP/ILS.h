@@ -18,7 +18,4 @@ bool bestImprovement2Opt(Solution &solution, Data *data);
 bool bestImprovementOrOpt(Solution &solution, Data *data, int n);
 
 Solution Pertubacao(Solution solution, Data *data);
-
-void UpdateAllSubseq(Data* data, Solution *s, vector<vector<Subsequence>>& subseq_matrix);
-
-}; // namespace ILS
+};

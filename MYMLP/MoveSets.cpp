@@ -135,6 +135,11 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
 
       delta = ac + bd - (ab + cd);
 
+      Subsequence sigma1;
+      sigma1.Concatenate(solution.subseq_matrix[0][i-1], solution.subseq_matrix[j][i], 0.0);
+      Subsequence sigma2;
+      sigma2.Concatenate(sigma1, solution.subseq_matrix[j+1][data->getDimension()], 0.0);
+
       if (delta < best2opt.delta) {
         best2opt.delta = delta;
         best2opt.i = i + 1;
@@ -149,6 +154,7 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
 
     reverse(solution.sequence.begin() + best2opt.i,
             solution.sequence.begin() + best2opt.j);
+    solution.UpdateAllSubseq(data);
     return true;
   }
 
