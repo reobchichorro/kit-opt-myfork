@@ -5,6 +5,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
+  srand(0);
 
   auto data = Data(argc, argv[1]);
   data.read();

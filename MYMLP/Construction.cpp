@@ -37,19 +37,19 @@ void ILS::Construcao(Solution &solution, Data *data, const double alpha) {
       return data->getDistance(solution.sequence[lastSeqElement], a) < data->getDistance(solution.sequence[lastSeqElement], b);
     });
 
-    int k = 0; // rand between [0, alpha*len]
-
+    int k = rand() % (int)ceil(alpha * (data->getDimension() - solution.sequence.size()));
+    // cout << k << ",";
     auto it = elements.begin();
     std::advance(it, k);
 
     lastSeqElement++;
     solution.sequence[lastSeqElement] = *it;
 
-    cout << (*it) << " ";
+    // cout << (*it) << " ";
     elements.erase(it);
   }
 
   solution.sequence[data->getDimension()] = 1;
-  cout << solution.sequence[data->getDimension()] << " ";
-  cout << endl;
+  // cout << solution.sequence[data->getDimension()] << " ";
+  // cout << endl;
 }
