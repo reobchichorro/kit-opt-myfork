@@ -16,7 +16,7 @@ public:
   Solution(size_t n, Data *data);
 
   void updateCost(Data *data);
-  static double calcCost(const std::vector<int> &v, Data *data);
+  double calcCost(const std::vector<int> &v, Data *data);
   void printSolution();
   static void printSolution(std::vector<int> v);
   static void swap(std::vector<int> &v, int i, int j);

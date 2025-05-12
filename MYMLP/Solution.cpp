@@ -12,10 +12,10 @@ Solution::Solution() { // Initializes empty
 
 Solution::Solution(size_t n) { // Initializes with nodes, but cost set to zero
   this->sequence = std::vector<int>(n);
-  this->subseq_matrix = std::vector<std::vector<Subsequence>>(n, std::vector<Subsequence>(n));
+  this->subseq_matrix = std::vector<std::vector<Subsequence>>(n+1, std::vector<Subsequence>(n+1));
 
   std::iota(this->sequence.begin(), this->sequence.end(), 1); // @PG
-  this->sequence.push_back(this->sequence[0]);
+  this->sequence.push_back(-1); //this->sequence[0]);
 
   this->cost = 0;
 }
@@ -23,12 +23,12 @@ Solution::Solution(size_t n) { // Initializes with nodes, but cost set to zero
 Solution::Solution(size_t n,
                    Data *data) { // Initializes with nodes and sets initial cost
   this->sequence = std::vector<int>(n);
-  this->subseq_matrix = std::vector<std::vector<Subsequence>>(n, std::vector<Subsequence>(n));
+  this->subseq_matrix = std::vector<std::vector<Subsequence>>(n+1, std::vector<Subsequence>(n+1));
   // double T, C;
   // int W;
   // int first, last;
   std::iota(this->sequence.begin(), this->sequence.end(), 1); // @PG
-  this->sequence.push_back(this->sequence[0]);
+  this->sequence.push_back(-1); //this->sequence[0]);
 
   this->updateCost(data);
 }
@@ -49,8 +49,14 @@ double Solution::calcCost(const std::vector<int> &path, Data *data) {
     return 0;
 
   double cost = 0;
-  for (size_t i = 0; i < (path.size() - 1); i++)
-    cost += data->getDistance(path[i], path[i + 1]);
+  double latency = 0.0;
+  for (size_t i = 0; i < (path.size() - 1); i++) {
+    latency += data->getDistance(path[i], path[i + 1]);
+    cost += latency;
+  }
+
+  UpdateAllSubseq(data);
+
   return cost;
 }
 
@@ -72,7 +78,7 @@ void Solution::swap(std::vector<int> &v, int i, int j) {
 }
 
 void Solution::UpdateAllSubseq(Data *data) {
-  int n = this->sequence.size();
+  int n = data->getDimension()+1;
   // subsequencias de um unico no
   for (int i = 0; i < n; i++)
   {
@@ -83,12 +89,13 @@ void Solution::UpdateAllSubseq(Data *data) {
     subseq_matrix[i][i].last = this->sequence[i];
   }
 
+  
   for (int i = 0; i < n; i++)
     for (int j = i + 1; j < n; j++)
-      subseq_matrix[i][j].Concatenate(subseq_matrix[i][j-1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j-1].last+1, subseq_matrix[j][j].first+1));
+      subseq_matrix[i][j].Concatenate(subseq_matrix[i][j-1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j-1].last, subseq_matrix[j][j].first));
   
   for (int i = n - 1; i >= 0; i--)
     for (int j = i - 1; j >= 0; j--)
-      subseq_matrix[i][j].Concatenate(subseq_matrix[i][j+1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j-1].last+1, subseq_matrix[j][j].first+1));
+      subseq_matrix[i][j].Concatenate(subseq_matrix[i][j+1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j+1].last, subseq_matrix[j][j].first));
 
 }

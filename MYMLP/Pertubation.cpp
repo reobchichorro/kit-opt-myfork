@@ -50,7 +50,7 @@ Solution ILS::Pertubacao(Solution solution, Data *data) {
 
   solution.sequence.push_back(solution.sequence[0]);
 
-  solution.cost = Solution::calcCost(solution.sequence, data);
+  solution.cost = solution.calcCost(solution.sequence, data);
 
   return solution;
 }

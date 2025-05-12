@@ -10,8 +10,6 @@ typedef struct SwapInfo_t {
 } SwapInfo;
 
 bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
-
-  double delta;
   double xy, yz;
   double ab, bc;
 
@@ -22,12 +20,18 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
   double ac, cb, bd;
 
   size_t x, y, z, a, b, c, d;
-  SwapInfo bestSwap = (SwapInfo){.i = 0, .j = 0, .delta = 0};
+  SwapInfo bestSwap = (SwapInfo){.i = 0, .j = 0, .delta = solution.cost};
 
   // SWAP de não vizinhos
 
   // x -> y -> z => x -> b -> z
   // a -> b -> c => a -> y -> c
+
+  for (size_t i = 0; i<solution.subseq_matrix.size(); i++) {
+    for (size_t j = 0; j<solution.subseq_matrix[i].size(); j++) {
+      cout << i << ";" << j << ";" << solution.subseq_matrix[i][j].first << ";" << solution.subseq_matrix[i][j].last << ";" << solution.subseq_matrix[i][j].C << "\n";
+    }    
+  }
 
   for (size_t i = 1; i < solution.sequence.size() - 1; i++) {
 
@@ -52,12 +56,22 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
       ay = data->getDistance(a, y);
       yc = data->getDistance(y, c);
 
-      delta = xb + bz + ay + yc - (xy + yz + ab + bc);
+      Subsequence sigma0x = solution.subseq_matrix[0][i-1];
+      Subsequence sigmabb = solution.subseq_matrix[j][j];
+      Subsequence sigmaza = solution.subseq_matrix[i+1][j-1];
+      Subsequence sigmayy = solution.subseq_matrix[i][i];
+      Subsequence sigmacn = solution.subseq_matrix[j+1][solution.sequence.size() - 1];
+
+      Subsequence sigma;
+      sigma.Concatenate(sigma0x, sigmabb, xb);
+      sigma.Concatenate(sigma, sigmaza, bz);
+      sigma.Concatenate(sigma, sigmayy, ay);
+      sigma.Concatenate(sigma, sigmacn, yc);
 
       //std::cout << "i: " << i << " | j: " << j << " | delta: " << delta << std::endl;
 
-      if (delta < bestSwap.delta) {
-        bestSwap.delta = delta;
+      if (sigma.C < bestSwap.delta) {
+        bestSwap.delta = sigma.C;
         bestSwap.i = i;
         bestSwap.j = j;
       };
@@ -83,20 +97,29 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
     cb = data->getDistance(c, b);
     bd = data->getDistance(b, d);
 
-    delta = ac + cb + bd - (ab + bc + cd);
+    Subsequence sigma0a = solution.subseq_matrix[0][a];
+    Subsequence sigmacc = solution.subseq_matrix[c][c];
+    Subsequence sigmabb = solution.subseq_matrix[b][b];
+    Subsequence sigmadn = solution.subseq_matrix[d][solution.sequence[solution.sequence.size() - 1]];
+
+    Subsequence sigma;
+    sigma.Concatenate(sigma0a, sigmacc, ac);
+    sigma.Concatenate(sigma, sigmabb, cb);
+    sigma.Concatenate(sigma, sigmadn, bd);
 
     //std::cout << "i: " << i << " | j: " << i+1 << " | delta: " << delta << std::endl;
 
-    if (delta < bestSwap.delta) {
-      bestSwap.delta = delta;
+    if (sigma.C < bestSwap.delta) {
+      bestSwap.delta = sigma.C;
       bestSwap.i = i;
       bestSwap.j = i + 1;
     };
   }
 
-  if (bestSwap.delta < 0) {
+  if (bestSwap.delta < solution.cost) {
+    //UpdateParaSwap
     Solution::swap(solution.sequence, bestSwap.i, bestSwap.j);
-    solution.cost += bestSwap.delta;
+    solution.cost = bestSwap.delta;
     return true;
   }
 

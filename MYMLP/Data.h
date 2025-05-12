@@ -18,10 +18,10 @@ public:
 	void read();
 	void printMatrixDist();
 	inline int getDimension() { return dimension; };
-	inline double getDistance(int i, int j) { return distMatrix[i - 1][j - 1]; };
+	inline double getDistance(int vi, int vj) { return distMatrix[(vi != -1 ? vi : 1) - 1][(vj != -1 ? vj : 1) - 1]; };
 	inline double **getMatrixCost() { return distMatrix; }
-	inline double getXCoord(int i) { return xCoord[i - 1]; }
-	inline double getYCoord(int i) { return yCoord[i - 1]; }
+	inline double getXCoord(int vi) { return xCoord[vi - 1]; }
+	inline double getYCoord(int vi) { return yCoord[vi - 1]; }
 	inline bool getExplicitCoord() { return explicitCoord; };
 
 	string getInstanceName(); // Get instance's name

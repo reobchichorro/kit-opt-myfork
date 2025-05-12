@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
   auto data = Data(argc, argv[1]);
   data.read();
   size_t n = data.getDimension();
+  data.printMatrixDist();
   srand(time(NULL));
 
   auto start = chrono::high_resolution_clock::now();
