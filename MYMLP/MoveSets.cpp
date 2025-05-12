@@ -97,10 +97,10 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
     cb = data->getDistance(c, b);
     bd = data->getDistance(b, d);
 
-    Subsequence sigma0a = solution.subseq_matrix[0][a];
-    Subsequence sigmacc = solution.subseq_matrix[c][c];
-    Subsequence sigmabb = solution.subseq_matrix[b][b];
-    Subsequence sigmadn = solution.subseq_matrix[d][solution.sequence[solution.sequence.size() - 1]];
+    Subsequence sigma0a = solution.subseq_matrix[0][i-1];
+    Subsequence sigmacc = solution.subseq_matrix[i+1][i+1];
+    Subsequence sigmabb = solution.subseq_matrix[i][i];
+    Subsequence sigmadn = solution.subseq_matrix[i+2][solution.sequence.size() - 1];
 
     Subsequence sigma;
     sigma.Concatenate(sigma0a, sigmacc, ac);
