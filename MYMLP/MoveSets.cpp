@@ -10,13 +10,9 @@ typedef struct SwapInfo_t {
 } SwapInfo;
 
 bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
-  double xy, yz;
-  double ab, bc;
-
   double xb, bz;
   double ay, yc;
 
-  double cd;
   double ac, cb, bd;
 
   size_t x, y, z, a, b, c, d;
@@ -39,16 +35,10 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
     y = solution.sequence[i];
     z = solution.sequence[i + 1];
 
-    xy = data->getDistance(x, y);
-    yz = data->getDistance(y, z);
-
     for (size_t j = i + 2; j < solution.sequence.size() - 1; j++) {
       a = solution.sequence[j - 1];
       b = solution.sequence[j];
       c = solution.sequence[j + 1];
-
-      ab = data->getDistance(a, b);
-      bc = data->getDistance(b, c);
 
       xb = data->getDistance(x, b);
       bz = data->getDistance(b, z);
@@ -89,10 +79,6 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
     c = solution.sequence[i + 1];
     d = solution.sequence[i + 2];
 
-    ab = data->getDistance(a, b);
-    bc = data->getDistance(b, c);
-    cd = data->getDistance(c, d);
-
     ac = data->getDistance(a, c);
     cb = data->getDistance(c, b);
     bd = data->getDistance(b, d);
@@ -117,9 +103,9 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
   }
 
   if (bestSwap.delta < solution.cost) {
-    //UpdateParaSwap
     Solution::swap(solution.sequence, bestSwap.i, bestSwap.j);
     solution.cost = bestSwap.delta;
+    solution.UpdateAllSubseq(data);
     return true;
   }
 
@@ -134,9 +120,8 @@ typedef struct Info2opt {
 bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
 
   size_t a, b, c, d;
-  double ab, cd, ac, bd;
+  double ac, bd;
 
-  double delta;
   Info2opt best2opt = (Info2opt){
       .i = 0,
       .j = 0,
@@ -150,21 +135,16 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
       c = solution.sequence[j];
       d = solution.sequence[j + 1];
 
-      ab = data->getDistance(a, b);
-      cd = data->getDistance(c, d);
-
       ac = data->getDistance(a, c);
       bd = data->getDistance(b, d);
 
-      delta = ac + bd - (ab + cd);
-
       Subsequence sigma1;
-      sigma1.Concatenate(solution.subseq_matrix[0][i-1], solution.subseq_matrix[j][i], 0.0);
+      sigma1.Concatenate(solution.subseq_matrix[0][i], solution.subseq_matrix[j][i+1], ac);
       Subsequence sigma2;
-      sigma2.Concatenate(sigma1, solution.subseq_matrix[j+1][data->getDimension()], 0.0);
+      sigma2.Concatenate(sigma1, solution.subseq_matrix[j+1][solution.sequence.size() - 1], bd);
 
-      if (delta < best2opt.delta) {
-        best2opt.delta = delta;
+      if (sigma2.C < best2opt.delta) {
+        best2opt.delta = sigma2.C;
         best2opt.i = i + 1;
         best2opt.j = j + 1;
       }
@@ -172,9 +152,7 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
   }
 
   if (best2opt.delta < 0) {
-
-    solution.cost += best2opt.delta;
-
+    solution.cost = best2opt.delta;
     reverse(solution.sequence.begin() + best2opt.i,
             solution.sequence.begin() + best2opt.j);
     solution.UpdateAllSubseq(data);
