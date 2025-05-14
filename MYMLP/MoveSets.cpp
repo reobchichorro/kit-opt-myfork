@@ -6,7 +6,7 @@
 
 typedef struct SwapInfo_t {
   size_t i, j;
-  double delta;
+  double cost;
 } SwapInfo;
 
 bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
@@ -16,7 +16,7 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
   double ac, cb, bd;
 
   size_t x, y, z, a, b, c, d;
-  SwapInfo bestSwap = (SwapInfo){.i = 0, .j = 0, .delta = solution.cost};
+  SwapInfo bestSwap = (SwapInfo){.i = 0, .j = 0, .cost = solution.cost};
 
   // SWAP de não vizinhos
 
@@ -58,10 +58,10 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
       sigma.Concatenate(sigma, sigmayy, ay);
       sigma.Concatenate(sigma, sigmacn, yc);
 
-      //std::cout << "i: " << i << " | j: " << j << " | delta: " << delta << std::endl;
+      //std::cout << "i: " << i << " | j: " << j << " | cost: " << cost << std::endl;
 
-      if (sigma.C < bestSwap.delta) {
-        bestSwap.delta = sigma.C;
+      if (sigma.C < bestSwap.cost) {
+        bestSwap.cost = sigma.C;
         bestSwap.i = i;
         bestSwap.j = j;
       };
@@ -93,18 +93,18 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
     sigma.Concatenate(sigma, sigmabb, cb);
     sigma.Concatenate(sigma, sigmadn, bd);
 
-    //std::cout << "i: " << i << " | j: " << i+1 << " | delta: " << delta << std::endl;
+    //std::cout << "i: " << i << " | j: " << i+1 << " | cost: " << cost << std::endl;
 
-    if (sigma.C < bestSwap.delta) {
-      bestSwap.delta = sigma.C;
+    if (sigma.C < bestSwap.cost) {
+      bestSwap.cost = sigma.C;
       bestSwap.i = i;
       bestSwap.j = i + 1;
     };
   }
 
-  if (bestSwap.delta < solution.cost) {
+  if (bestSwap.cost < solution.cost) {
     Solution::swap(solution.sequence, bestSwap.i, bestSwap.j);
-    solution.cost = bestSwap.delta;
+    solution.cost = bestSwap.cost;
     solution.UpdateAllSubseq(data);
     return true;
   }
@@ -114,7 +114,7 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
 
 typedef struct Info2opt {
   size_t i, j;
-  double delta;
+  double cost;
 } Info2opt_t;
 
 bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
@@ -125,7 +125,7 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
   Info2opt best2opt = (Info2opt){
       .i = 0,
       .j = 0,
-      .delta = 0,
+      .cost = solution.cost,
   };
 
   for (size_t i = 0; i < solution.sequence.size(); i++) {
@@ -143,16 +143,16 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
       Subsequence sigma2;
       sigma2.Concatenate(sigma1, solution.subseq_matrix[j+1][solution.sequence.size() - 1], bd);
 
-      if (sigma2.C < best2opt.delta) {
-        best2opt.delta = sigma2.C;
+      if (sigma2.C < best2opt.cost) {
+        best2opt.cost = sigma2.C;
         best2opt.i = i + 1;
         best2opt.j = j + 1;
       }
     }
   }
 
-  if (best2opt.delta < 0) {
-    solution.cost = best2opt.delta;
+  if (best2opt.cost < solution.cost) {
+    solution.cost = best2opt.cost;
     reverse(solution.sequence.begin() + best2opt.i,
             solution.sequence.begin() + best2opt.j);
     solution.UpdateAllSubseq(data);
@@ -164,14 +164,13 @@ bool ILS::bestImprovement2Opt(Solution &solution, Data *data) {
 
 typedef struct OrOptInfo {
   size_t i, j;
-  double delta;
+  double cost;
 } OrOptInfo_t;
 
-bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, int n) {
+bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, size_t n) {
   size_t a, b, c, d, e, f, aux;
-  double ab, cd, ad, eb, cf, ef;
-  double delta;
-  OrOptInfo bestOrOp = (OrOptInfo){.i = 0, .j = 0, .delta = 0};
+  double ad, eb, cf;
+  OrOptInfo bestOrOp = (OrOptInfo){.i = 0, .j = 0, .cost = 0};
 
   if (solution.sequence.size() <= n) {
     return true;
@@ -194,41 +193,46 @@ bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, int n) {
       e = solution.sequence[j];
       f = solution.sequence[j + 1];
 
-      ab = data->getDistance(a, b);
-      cd = data->getDistance(c, d);
       ad = data->getDistance(a, d);
-
       eb = data->getDistance(e, b);
       cf = data->getDistance(c, f);
-      ef = data->getDistance(e, f);
 
-      delta = ad + eb + cf - (ab + cd + ef);
+      Subsequence sigma0a = solution.subseq_matrix[0][i-1];
+      Subsequence sigmade = solution.subseq_matrix[i+n][j];
+      Subsequence sigmabc = solution.subseq_matrix[i][i+n-1];
+      Subsequence sigmafn = solution.subseq_matrix[j+1][solution.sequence.size() - 1];
+  
+      Subsequence sigma;
+      sigma.Concatenate(sigma0a, sigmade, ad);
+      sigma.Concatenate(sigma, sigmabc, eb);
+      sigma.Concatenate(sigma, sigmafn, cf);
 
-      if (delta < bestOrOp.delta) {
-        bestOrOp.delta = delta;
+      if (sigma.C < bestOrOp.cost) {
+        bestOrOp.cost = sigma.C;
         bestOrOp.i = i;
         bestOrOp.j = j;
       }
     }
   }
 
-  if (bestOrOp.delta < 0) {
+  if (bestOrOp.cost < solution.cost) {
     if (bestOrOp.i > bestOrOp.j) {
-      for (int i = 0; i < n; i++) {
+      for (size_t i = 0; i < n; i++) {
         aux = solution.sequence[bestOrOp.i + i];
         solution.sequence.erase(solution.sequence.begin() + bestOrOp.i + i);
-        solution.sequence.insert(solution.sequence.begin() + bestOrOp.j + i + 1,
-                                 aux);
+        solution.sequence.insert(solution.sequence.begin() + bestOrOp.j + i + 1, aux);
+        solution.UpdateAllSubseq(data);
       }
     } else {
-      for (int i = 0; i < n; i++) {
+      for (size_t i = 0; i < n; i++) {
         aux = solution.sequence[bestOrOp.i];
         solution.sequence.erase(solution.sequence.begin() + bestOrOp.i);
         solution.sequence.insert(solution.sequence.begin() + bestOrOp.j, aux);
+        solution.UpdateAllSubseq(data);
       }
     }
 
-    solution.cost += bestOrOp.delta;
+    solution.cost = bestOrOp.cost;
 
     return true;
   }

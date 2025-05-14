@@ -15,7 +15,7 @@ bool bestImprovementSwap(Solution &solution, Data *data);
 
 bool bestImprovement2Opt(Solution &solution, Data *data);
 
-bool bestImprovementOrOpt(Solution &solution, Data *data, int n);
+bool bestImprovementOrOpt(Solution &solution, Data *data, size_t n);
 
 Solution Pertubacao(Solution solution, Data *data);
 };
