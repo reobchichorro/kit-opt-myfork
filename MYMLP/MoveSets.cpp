@@ -170,7 +170,7 @@ typedef struct OrOptInfo {
 bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, size_t n) {
   size_t a, b, c, d, e, f, aux;
   double ad, eb, cf;
-  OrOptInfo bestOrOp = (OrOptInfo){.i = 0, .j = 0, .cost = 0};
+  OrOptInfo bestOrOp = (OrOptInfo){.i = 0, .j = 0, .cost = solution.cost};
 
   if (solution.sequence.size() <= n) {
     return true;
