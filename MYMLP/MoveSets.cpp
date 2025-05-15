@@ -23,11 +23,11 @@ bool ILS::bestImprovementSwap(Solution &solution, Data *data) {
   // x -> y -> z => x -> b -> z
   // a -> b -> c => a -> y -> c
 
-  for (size_t i = 0; i<solution.subseq_matrix.size(); i++) {
-    for (size_t j = 0; j<solution.subseq_matrix[i].size(); j++) {
-      cout << i << ";" << j << ";" << solution.subseq_matrix[i][j].first << ";" << solution.subseq_matrix[i][j].last << ";" << solution.subseq_matrix[i][j].C << "\n";
-    }
-  }
+  // for (size_t i = 0; i<solution.subseq_matrix.size(); i++) {
+  //   for (size_t j = 0; j<solution.subseq_matrix[i].size(); j++) {
+  //     cout << i << ";" << j << ";" << solution.subseq_matrix[i][j].first << ";" << solution.subseq_matrix[i][j].last << ";" << solution.subseq_matrix[i][j].C << "\n";
+  //   }
+  // }
 
   for (size_t i = 1; i < solution.sequence.size() - 1; i++) {
 
