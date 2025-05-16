@@ -24,7 +24,7 @@ Solution ILS::Pertubacao(Solution solution, Data *data) {
   else
     sliceA.size = ceil(rand() % (solution.sequence.size() / 10 - 2)) + 2;
 
-  sliceA.index = rand() % (solution.sequence.size() - sliceA.size + 1);
+  sliceA.index = rand() % (solution.sequence.size() - sliceA.size) + 1;
 
   std::rotate(solution.sequence.begin(),
               solution.sequence.begin() + sliceA.index,
@@ -48,7 +48,13 @@ Solution ILS::Pertubacao(Solution solution, Data *data) {
               solution.sequence.begin() + sliceB.size + sliceA.size,
               solution.sequence.begin() + sliceB.index + sliceB.size);
 
-  solution.sequence.push_back(solution.sequence[0]);
+  auto it = std::find(solution.sequence.begin(), solution.sequence.end(), 1);
+
+  std::rotate(solution.sequence.begin(),
+              it,
+              solution.sequence.end());
+
+  solution.sequence.push_back(-1);
 
   solution.cost = solution.calcCost(solution.sequence, data);
 

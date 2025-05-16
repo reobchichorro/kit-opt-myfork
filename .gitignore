@@ -1,3 +1,5 @@
 *.o
 *.d
 *.out
+/instances-rel/
+/MYMLP/results/
