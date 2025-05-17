@@ -94,8 +94,10 @@ void Solution::UpdateAllSubseq(Data *data) {
     for (int j = i + 1; j < n; j++)
       subseq_matrix[i][j].Concatenate(subseq_matrix[i][j-1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j-1].last, subseq_matrix[j][j].first));
   
-  for (int i = n - 1; i >= 0; i--)
-    for (int j = i - 1; j >= 0; j--)
+  for (int i = n - 1; i >= 0; i--) {
+    for (int j = i - 1; j > 0; j--)
       subseq_matrix[i][j].Concatenate(subseq_matrix[i][j+1], subseq_matrix[j][j], data->getDistance(subseq_matrix[i][j+1].last, subseq_matrix[j][j].first));
+    subseq_matrix[i][0].Concatenate(subseq_matrix[i][1], subseq_matrix[n-1][n-1], data->getDistance(subseq_matrix[i][1].last, subseq_matrix[n-1][n-1].first));
+  }
 
 }

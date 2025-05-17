@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/MYMLP/solve.out",
-            "args": ["${workspaceFolder}/instances/burma14.tsp"],
+            "args": ["${workspaceFolder}/instances/eli51.tsp"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

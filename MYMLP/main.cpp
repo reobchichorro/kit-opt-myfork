@@ -3,17 +3,23 @@
 #include <bits/types/time_t.h>
 #include <chrono>
 #include <iostream>
+#include <iomanip>
 
 int main(int argc, char **argv) {
   srand(0);
 
+  if (argv[1] == "pr76r.tsp") {
+    std::cerr << std::fixed << argv[1] << ";;\n";
+    return 0;
+  }
+
   auto data = Data(argc, argv[1]);
   data.read();
   // size_t n = data.getDimension();
-  data.printMatrixDist();
+  // data.printMatrixDist();
   srand(time(NULL));
 
-  std::cerr << data.getInstanceName() << std::endl;
+  std::cerr << std::fixed << data.getInstanceName() << ";";
   auto start = chrono::high_resolution_clock::now();
   ILS::ILS(&data);
   auto stop = chrono::high_resolution_clock::now();

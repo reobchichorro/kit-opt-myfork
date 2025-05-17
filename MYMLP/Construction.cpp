@@ -23,8 +23,6 @@ void ILS::Construcao(Solution &solution, Data *data, const double alpha) {
   solution.sequence = vector<int>(data->getDimension()+1);
   solution.sequence[0] = 1;
   int lastSeqElement = 0;
-
-  double total_dist = 0.0; //Solution::calcCost(path, data);
   
   // cout << "Construcao\n";
   // cout << solution.sequence[0] << " ";
@@ -37,9 +35,10 @@ void ILS::Construcao(Solution &solution, Data *data, const double alpha) {
       return data->getDistance(solution.sequence[lastSeqElement], a) < data->getDistance(solution.sequence[lastSeqElement], b);
     });
 
-    int k = rand() % (int)ceil(alpha * elements.size());
-    k=0;
-    // cout << k << ",";
+    double kk = alpha * elements.size();
+    auto kkk = ceil(kk);
+    int kkkk = std::max(kkk, 1.1);
+    int k = rand() % kkkk;
     auto it = elements.begin();
     std::advance(it, k);
 
