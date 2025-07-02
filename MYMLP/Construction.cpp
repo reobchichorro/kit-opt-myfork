@@ -15,7 +15,7 @@ typedef struct InsertionInfo_t {
   double cost;
 } InsertionInfo;
 
-void ILS::Construcao(Solution &solution, Data *data, const double alpha) {
+void ILS::Construcao(Solution &solution, Data *data, const int alpha) {
   list<int> elements; //= list<int>(data->getDimension());
   for (int i=1; i<data->getDimension(); i++)
     elements.push_back(i+1);
@@ -35,10 +35,9 @@ void ILS::Construcao(Solution &solution, Data *data, const double alpha) {
       return data->getDistance(solution.sequence[lastSeqElement], a) < data->getDistance(solution.sequence[lastSeqElement], b);
     });
 
-    double kk = alpha * elements.size();
-    auto kkk = ceil(kk);
-    int kkkk = std::max(kkk, 1.1);
-    int k = rand() % kkkk;
+    int kk = (alpha * elements.size()) / 100;
+    int k = rand() % (1+kk);
+    cerr << elements.size() << " " << alpha << " " << kk << " " << k << "\n";
     auto it = elements.begin();
     std::advance(it, k);
 

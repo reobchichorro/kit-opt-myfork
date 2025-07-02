@@ -9,14 +9,14 @@ Solution ILS::ILS(Data *data) {
   Solution bestOfAll;
   bestOfAll.cost = solution.cost;
   Solution best;
-  std::vector<double> R = std::vector<double>(26);
+  std::vector<int> R = std::vector<int>(26);
   for (int i=0; i<26; i++)
-    R[i] = (double)i/100;
-
-  double average = 0.0;
+    R[i] = i;
+  
+  vector<double> averages = vector<double>(MAX_ITER);
 
   int max_iter_ils = std::min(MAX_ITER_ILS, data->getDimension());
-
+    
   std::cout << "Custo inicial: " << solution.cost << std::endl;
 
   for (int i = 0; i < MAX_ITER; i++) {
@@ -38,12 +38,15 @@ Solution ILS::ILS(Data *data) {
     if (best.cost < bestOfAll.cost) {
       bestOfAll = best;
     }
-    average += best.cost;
+    double oldCost = best.cost;
+    best.updateCost(data);
+    cerr << oldCost << " " << best.cost << "\n";
+    averages[i] = best.cost;
 
     // std::cout << "Solução parcial: " << bestOfAll.cost << std::endl;
   }
   // std::cerr << std::endl;
-  average /= MAX_ITER;
+  double average = accumulate(averages.begin(), averages.end(), 0)/MAX_ITER;
 
   bestOfAll.printSolution();
 

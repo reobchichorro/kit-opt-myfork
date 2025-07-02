@@ -2,12 +2,13 @@
 #include "./Data.h"
 #include "./Solution.h"
 #include "ILS.h"
+#include <numeric>
 
 namespace ILS {
 
 Solution ILS(Data *data);
 
-void Construcao(Solution &solution, Data *data, const double alpha);
+void Construcao(Solution &solution, Data *data, const int alpha);
 
 void BuscaLocal(Solution &solution, Data *data);
 

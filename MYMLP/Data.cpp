@@ -318,6 +318,12 @@ void Data::read()
 		}
 
 		//      cout << ewf << endl;
+		// for (int i=0; i<dimension; i++){
+		// 	for (int j=0; j<dimension; j++)
+		// 		cerr << distMatrix[i][j] << " ";
+		// 	cerr << "\n";
+		// }
+		// cerr << "t\n";
 	}
 
 	else if (typeProblem == "EUC_2D")
