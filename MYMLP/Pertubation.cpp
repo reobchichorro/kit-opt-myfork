@@ -14,6 +14,32 @@ struct slice {
 
 Solution ILS::Pertubacao(Solution solution, Data *data) {
 
+  int n = data->getDimension();
+  vector<vector<long long int>> combs = vector<vector<long long int>>(4, vector<long long int>(n, 0));
+  for (int j=0; j<n; j++) {
+    long long int nj = j;
+    combs[0][j] = nj;
+    nj *= j-1;
+    combs[1][j] = nj/2;
+    nj *= j-2;
+    combs[2][j] = nj/6;
+    nj *= j-3;
+    combs[3][j] = nj/24;
+  }
+  long long int edges = combs[3][n-1] - (rand() % combs[3][n-1]) - 1;
+  vector<int> bridges = vector<int>(4);
+  for (int i=0; i<4; i++) {
+    int ii = 3-i;
+    for (int j=0; j<n; j++) {
+      if (edges < combs[ii][j]) {
+        bridges[i] = n-j-1;
+        if (j > 0)
+          edges -= combs[ii][j-1];
+        break;
+      }
+    }
+  }
+
   solution.sequence.pop_back();
 
   struct slice sliceA;

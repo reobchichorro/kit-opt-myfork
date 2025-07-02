@@ -35,8 +35,9 @@ void ILS::Construcao(Solution &solution, Data *data, const int alpha) {
       return data->getDistance(solution.sequence[lastSeqElement], a) < data->getDistance(solution.sequence[lastSeqElement], b);
     });
 
-    int kk = (alpha * elements.size()) / 100;
-    int k = rand() % (1+kk);
+    int kk = ceil((alpha * elements.size()) / 100.0);
+    if (alpha == 0) kk = 1;
+    int k = rand() % (kk);
     cerr << elements.size() << " " << alpha << " " << kk << " " << k << "\n";
     auto it = elements.begin();
     std::advance(it, k);

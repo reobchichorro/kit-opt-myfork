@@ -18,6 +18,7 @@ public:
   void updateCost(Data *data);
   double calcCost(const std::vector<int> &v, Data *data);
   void printSolution();
+  void printSolution2();
   static void printSolution(std::vector<int> v);
   static void swap(std::vector<int> &v, int i, int j);
 

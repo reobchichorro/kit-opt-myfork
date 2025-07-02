@@ -25,6 +25,9 @@ Solution ILS::ILS(Data *data) {
     ILS::Construcao(solution, data, R[alphaidx]);
 
     best = solution;
+    
+    cerr << "After Construction: " << best.cost << "\n";
+    best.printSolution2();
 
     for (int iterIls = 0; iterIls < max_iter_ils; iterIls++) {
       ILS::BuscaLocal(solution, data);
@@ -38,9 +41,11 @@ Solution ILS::ILS(Data *data) {
     if (best.cost < bestOfAll.cost) {
       bestOfAll = best;
     }
-    double oldCost = best.cost;
-    best.updateCost(data);
-    cerr << oldCost << " " << best.cost << "\n";
+    // double oldCost = best.cost;
+    // best.updateCost(data);
+    cerr << "After ILS: " << best.cost << "\n";
+    best.printSolution2();
+    // cerr /*<< oldCost << " "*/ << best.cost << "\n";
     averages[i] = best.cost;
 
     // std::cout << "Solução parcial: " << bestOfAll.cost << std::endl;

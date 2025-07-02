@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/MYMLP/solve.out",
-            "args": ["${workspaceFolder}/instances-rel/dantzig42.tsp"],
+            "args": ["${workspaceFolder}/instances-rel/dantzig42.tsp", "2>", "errDebug.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

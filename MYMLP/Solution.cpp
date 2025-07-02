@@ -66,6 +66,12 @@ void Solution::printSolution() {
               << (i != this->sequence.size() - 1 ? " -> " : "\n");
 }
 
+void Solution::printSolution2() {
+  for (size_t i = 0; i < this->sequence.size(); i++)
+    std::cerr << this->sequence[i]
+              << (i != this->sequence.size() - 1 ? "\t" : "\n");
+}
+
 void Solution::printSolution(std::vector<int> v) {
   for (size_t i = 0; i < v.size(); i++)
     std::cout << v[i] << (i != v.size() - 1 ? " -> " : "\n");
