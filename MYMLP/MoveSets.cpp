@@ -176,6 +176,39 @@ bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, size_t n) {
     return true;
   }
 
+  for (int i = 0; i < solution.sequence.size() - 2; i++) {
+    for (int j = 0; j < solution.sequence.size() - 2; j++) {
+      if (i == j)
+        continue;
+
+      if (i > 0 && /*não mexe no início*/) {
+        a = solution.sequence[i - 1];
+        b = solution.sequence[i];
+        c = solution.sequence[i + n - 1];
+        d = solution.sequence[i + n];
+
+        e = solution.sequence[j + n - 1];
+        f = solution.sequence[j + n];
+
+        ad = data->getDistance(a, d);
+        eb = data->getDistance(e, b);
+        cf = data->getDistance(c, f);
+
+        Subsequence sigma0a = solution.subseq_matrix[0][i-1];
+        Subsequence sigmade = solution.subseq_matrix[i+n][j+n-1];
+        Subsequence sigmabc = solution.subseq_matrix[i][i+n-1];
+        Subsequence sigmafn = solution.subseq_matrix[j+n][solution.sequence.size() - 1];
+    
+        Subsequence sigma;
+        sigma.Concatenate(sigma0a, sigmade, ad);
+        sigma.Concatenate(sigma, sigmabc, eb);
+        sigma.Concatenate(sigma, sigmafn, cf);
+      }
+      
+      cerr << i << "," << j << " [" << 0 << "," << (i-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << (i+n+solution.sequence.size()-1)%(solution.sequence.size()-1) << "," << (j+n-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << i << "," << (i+n-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << (j+n+solution.sequence.size()-1)%(solution.sequence.size()-1) << "," << solution.sequence.size() - 1 << "]\n";
+    }
+  }
+
   for (size_t i = 1; i < solution.sequence.size() - n; i++) {
     for (size_t j = 1; j < solution.sequence.size() - 1; j++) {
 
