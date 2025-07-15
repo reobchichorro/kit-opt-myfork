@@ -71,7 +71,17 @@
 			"ios": "cpp",
 			"locale": "cpp",
 			"print": "cpp",
-			"queue": "cpp"
+			"queue": "cpp",
+			"list": "cpp",
+			"unordered_set": "cpp",
+			"chrono": "cpp",
+			"map": "cpp",
+			"numeric": "cpp",
+			"iomanip": "cpp",
+			"semaphore": "cpp",
+			"sstream": "cpp",
+			"stop_token": "cpp",
+			"cinttypes": "cpp"
 		}
 	}
 }
