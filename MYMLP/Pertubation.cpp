@@ -14,39 +14,53 @@ struct slice {
 
 Solution ILS::Pertubacao(Solution solution, Data *data) {
 
+  int n = data->getDimension();
+  int minS = 2;
+  int maxS = ceil(n/10.0);
+  int s1 = 2;
+  int s2 = 2;
+  if (maxS > 2) {
+    s1 = minS + (rand() % (maxS - minS));
+    s2 = minS + (rand() % (maxS - minS));
+  }
+  
+  int a = rand() % n;
+  int b = rand() % (n-s1-s2+1);
+  // b = ((a+s1) + b) % n;
+
   solution.sequence.pop_back();
 
-  struct slice sliceA;
-  struct slice sliceB;
+  // struct slice sliceA;
+  // struct slice sliceB;
 
-  if (solution.sequence.size() <= 30)
-    sliceA.size = 2;
-  else
-    sliceA.size = ceil(rand() % (solution.sequence.size() / 10 - 2)) + 2;
+  // if (solution.sequence.size() <= 30)
+  //   sliceA.size = 2;
+  // else
+  //   sliceA.size = ceil(rand() % (solution.sequence.size() / 10 - 2)) + 2;
 
-  sliceA.index = rand() % (solution.sequence.size() - sliceA.size) + 1;
+  // sliceA.index = rand() % (solution.sequence.size() - sliceA.size) + 1;
 
   std::rotate(solution.sequence.begin(),
-              solution.sequence.begin() + sliceA.index,
+              solution.sequence.begin() + a,
               solution.sequence.end());
 
-  if (solution.sequence.size() <= 30)
-    sliceB.size = 2;
-  else
-    sliceB.size =
-        ceil(rand() % ((solution.sequence.size() - sliceA.size) / 10 - 2)) + 2;
+  // if (solution.sequence.size() <= 30)
+  //   sliceB.size = 2;
+  // else
+  //   sliceB.size =
+  //       ceil(rand() % ((solution.sequence.size() - sliceA.size) / 10 - 2)) + 2;
 
-  sliceB.index =
-      rand() % (solution.sequence.size() - sliceA.size - sliceB.size + 1) +
-      sliceA.size;
+  // sliceB.index =
+  //     rand() % (solution.sequence.size() - sliceA.size - sliceB.size + 1) +
+  //     sliceA.size;
 
   std::rotate(solution.sequence.begin(),
-              solution.sequence.begin() + sliceB.index,
-              solution.sequence.begin() + sliceB.index + sliceB.size);
+              solution.sequence.begin() + b+s1,
+              solution.sequence.begin() + b+s1+s2);
 
-  std::rotate(solution.sequence.begin() + sliceB.size,
-              solution.sequence.begin() + sliceB.size + sliceA.size,
-              solution.sequence.begin() + sliceB.index + sliceB.size);
+  std::rotate(solution.sequence.begin() + s2,
+              solution.sequence.begin() + s2 + s1,
+              solution.sequence.begin() + b+s1+s2);
 
   auto it = std::find(solution.sequence.begin(), solution.sequence.end(), 1);
 
