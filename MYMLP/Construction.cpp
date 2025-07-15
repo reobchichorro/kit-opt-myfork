@@ -37,7 +37,7 @@ void ILS::Construcao(Solution &solution, Data *data, const int alpha) {
 
     int kk = (alpha * elements.size()) / 100;
     int k = rand() % (1+kk);
-    cerr << elements.size() << " " << alpha << " " << kk << " " << k << "\n";
+    // cerr << elements.size() << " " << alpha << " " << kk << " " << k << "\n";
     auto it = elements.begin();
     std::advance(it, k);
 

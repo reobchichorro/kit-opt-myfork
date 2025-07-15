@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   // data.printMatrixDist();
   srand(time(NULL));
 
-  std::cerr << std::fixed << data.getInstanceName() << ";";
+  // std::cerr << std::fixed << data.getInstanceName() << ";";
   auto start = chrono::high_resolution_clock::now();
   ILS::ILS(&data);
   auto stop = chrono::high_resolution_clock::now();

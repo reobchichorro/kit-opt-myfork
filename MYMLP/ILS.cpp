@@ -40,7 +40,6 @@ Solution ILS::ILS(Data *data) {
     }
     double oldCost = best.cost;
     best.updateCost(data);
-    cerr << oldCost << " " << best.cost << "\n";
     averages[i] = best.cost;
 
     // std::cout << "Solução parcial: " << bestOfAll.cost << std::endl;
@@ -52,7 +51,7 @@ Solution ILS::ILS(Data *data) {
 
   std::cout << "Custo final = " << bestOfAll.cost << std::endl;
   std::cout << "Average sol = " << average << std::endl;
-  std::cerr << bestOfAll.cost << ";" << average << "\n";
+  std::cerr << data->getInstanceName() << ";" << bestOfAll.cost << ";" << average << "\n";
 
   return bestOfAll;
 }

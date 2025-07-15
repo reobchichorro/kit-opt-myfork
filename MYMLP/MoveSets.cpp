@@ -172,100 +172,181 @@ bool ILS::bestImprovementOrOpt(Solution &solution, Data *data, size_t n) {
   double ad, eb, cf;
   OrOptInfo bestOrOp = (OrOptInfo){.i = 0, .j = 0, .cost = solution.cost};
 
-  if (solution.sequence.size() <= n) {
-    return true;
-  }
+  for (int i = 0; i < solution.sequence.size() - 1; i++) {
+    bool initIn = i==0 || i+n > solution.sequence.size()-1;
+    for (int jj = 0; jj < solution.sequence.size() - 1 - n; jj++) {
+      int j = (i+jj+n)%(solution.sequence.size() - 1);
 
-  for (int i = 0; i < solution.sequence.size() - 2; i++) {
-    for (int j = 0; j < solution.sequence.size() - 2; j++) {
-      if (i == j)
-        continue;
+      if (initIn) {
+        if (i==0) {
+          a = solution.sequence[0];
+          b = solution.sequence[i + n - 1];
+          
+          c = solution.sequence[i + n];
+          d = solution.sequence[j];
+          e = solution.sequence[j + 1];
+          f = solution.sequence[solution.sequence.size() - 2];
 
-      if (i > 0 && /*não mexe no início*/) {
+          eb = data->getDistance(b, e);
+          cf = data->getDistance(f, c);
+          ad = data->getDistance(d, a);
+
+          Subsequence sigma0b = solution.subseq_matrix[0][i+n-1];
+          Subsequence sigmaef = solution.subseq_matrix[j+1][solution.sequence.size() - 2];
+          Subsequence sigmacd = solution.subseq_matrix[i+n][j];
+          Subsequence sigmann = solution.subseq_matrix[solution.sequence.size() - 1][solution.sequence.size() - 1];
+      
+          Subsequence sigma;
+          sigma.Concatenate(sigma0b, sigmaef, eb);
+          sigma.Concatenate(sigma, sigmacd, cf);
+          sigma.Concatenate(sigma, sigmann, ad);
+          if (sigma.C < bestOrOp.cost) {
+            bestOrOp.cost = sigma.C;
+            bestOrOp.i = i;
+            bestOrOp.j = j;
+          }
+        }
+        else {
+          int s_1 = solution.sequence.size() - 1;
+          a = solution.sequence[i];
+          b = solution.sequence[(i + n - 1)%s_1];
+          
+          c = solution.sequence[(i + n)%s_1];
+          d = solution.sequence[j];
+          e = solution.sequence[j + 1];
+          f = solution.sequence[i - 1];
+
+          eb = data->getDistance(b, e);
+          cf = data->getDistance(f, c);
+          ad = data->getDistance(d, a);
+
+          Subsequence sigma0b = solution.subseq_matrix[0][(i+n-1)%s_1];
+          Subsequence sigmaef = solution.subseq_matrix[j+1][i-1];
+          Subsequence sigmacd = solution.subseq_matrix[(i+n)%s_1][j];
+          Subsequence sigmaan = solution.subseq_matrix[i][solution.sequence.size() - 1];
+      
+          Subsequence sigma;
+          sigma.Concatenate(sigma0b, sigmaef, eb);
+          sigma.Concatenate(sigma, sigmacd, cf);
+          sigma.Concatenate(sigma, sigmaan, ad);
+          if (sigma.C < bestOrOp.cost) {
+            bestOrOp.cost = sigma.C;
+            bestOrOp.i = i;
+            bestOrOp.j = j;
+          }
+        }
+      }
+      else if (i < j) {
         a = solution.sequence[i - 1];
         b = solution.sequence[i];
         c = solution.sequence[i + n - 1];
         d = solution.sequence[i + n];
 
-        e = solution.sequence[j + n - 1];
-        f = solution.sequence[j + n];
+        e = solution.sequence[j];
+        f = solution.sequence[j + 1];
 
         ad = data->getDistance(a, d);
         eb = data->getDistance(e, b);
         cf = data->getDistance(c, f);
 
         Subsequence sigma0a = solution.subseq_matrix[0][i-1];
-        Subsequence sigmade = solution.subseq_matrix[i+n][j+n-1];
+        Subsequence sigmade = solution.subseq_matrix[i+n][j];
         Subsequence sigmabc = solution.subseq_matrix[i][i+n-1];
-        Subsequence sigmafn = solution.subseq_matrix[j+n][solution.sequence.size() - 1];
+        Subsequence sigmafn = solution.subseq_matrix[j+1][solution.sequence.size() - 1];
     
         Subsequence sigma;
         sigma.Concatenate(sigma0a, sigmade, ad);
         sigma.Concatenate(sigma, sigmabc, eb);
         sigma.Concatenate(sigma, sigmafn, cf);
+        if (sigma.C < bestOrOp.cost) {
+          bestOrOp.cost = sigma.C;
+          bestOrOp.i = i;
+          bestOrOp.j = j;
+        }
       }
-      
-      cerr << i << "," << j << " [" << 0 << "," << (i-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << (i+n+solution.sequence.size()-1)%(solution.sequence.size()-1) << "," << (j+n-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << i << "," << (i+n-1+solution.sequence.size()-1)%(solution.sequence.size()-1) << "] + [" << (j+n+solution.sequence.size()-1)%(solution.sequence.size()-1) << "," << solution.sequence.size() - 1 << "]\n";
-    }
-  }
+      else {
+        a = solution.sequence[i - 1];
+        b = solution.sequence[i];
+        c = solution.sequence[i + n - 1];
+        d = solution.sequence[i + n];
 
-  for (size_t i = 1; i < solution.sequence.size() - n; i++) {
-    for (size_t j = 1; j < solution.sequence.size() - 1; j++) {
+        e = solution.sequence[j];
+        f = solution.sequence[j + 1];
 
-      if (j >= i - 1 && j < i + n)
-        continue;
+        eb = data->getDistance(e, b);
+        cf = data->getDistance(c, f);
+        ad = data->getDistance(a, d);
 
-      // a -> [b -> c] -> d => a -> d
-      // e -> f => e -> [b -> c] -> d
-
-      a = solution.sequence[i - 1];
-      b = solution.sequence[i];
-      c = solution.sequence[i + n - 1];
-      d = solution.sequence[i + n];
-
-      e = solution.sequence[j];
-      f = solution.sequence[j + 1];
-
-      ad = data->getDistance(a, d);
-      eb = data->getDistance(e, b);
-      cf = data->getDistance(c, f);
-
-      Subsequence sigma0a = solution.subseq_matrix[0][i-1];
-      Subsequence sigmade = solution.subseq_matrix[i+n][j];
-      Subsequence sigmabc = solution.subseq_matrix[i][i+n-1];
-      Subsequence sigmafn = solution.subseq_matrix[j+1][solution.sequence.size() - 1];
-  
-      Subsequence sigma;
-      sigma.Concatenate(sigma0a, sigmade, ad);
-      sigma.Concatenate(sigma, sigmabc, eb);
-      sigma.Concatenate(sigma, sigmafn, cf);
-
-      if (sigma.C < bestOrOp.cost) {
-        bestOrOp.cost = sigma.C;
-        bestOrOp.i = i;
-        bestOrOp.j = j;
+        Subsequence sigma0e = solution.subseq_matrix[0][j];
+        Subsequence sigmabc = solution.subseq_matrix[i][i+n-1];
+        Subsequence sigmafa = solution.subseq_matrix[j+1][i-1];
+        Subsequence sigmadn = solution.subseq_matrix[i+n][solution.sequence.size() - 1];
+    
+        Subsequence sigma;
+        sigma.Concatenate(sigma0e, sigmabc, eb);
+        sigma.Concatenate(sigma, sigmafa, cf);
+        sigma.Concatenate(sigma, sigmadn, ad);
+        if (sigma.C < bestOrOp.cost) {
+          bestOrOp.cost = sigma.C;
+          bestOrOp.i = i;
+          bestOrOp.j = j;
+        }
       }
     }
   }
 
   if (bestOrOp.cost < solution.cost) {
-    if (bestOrOp.i > bestOrOp.j) {
-      for (size_t i = 0; i < n; i++) {
-        aux = solution.sequence[bestOrOp.i + i];
-        solution.sequence.erase(solution.sequence.begin() + bestOrOp.i + i);
-        solution.sequence.insert(solution.sequence.begin() + bestOrOp.j + i + 1, aux);
-        solution.UpdateAllSubseq(data);
-      }
-    } else {
-      for (size_t i = 0; i < n; i++) {
-        aux = solution.sequence[bestOrOp.i];
-        solution.sequence.erase(solution.sequence.begin() + bestOrOp.i);
-        solution.sequence.insert(solution.sequence.begin() + bestOrOp.j, aux);
-        solution.UpdateAllSubseq(data);
-      }
-    }
+    // if (bestOrOp.i > bestOrOp.j) {
+    //   for (size_t i = 0; i < n; i++) {
+    //     aux = solution.sequence[bestOrOp.i + i];
+    //     solution.sequence.erase(solution.sequence.begin() + bestOrOp.i + i);
+    //     solution.sequence.insert(solution.sequence.begin() + bestOrOp.j + i + 1, aux);
+    //     solution.UpdateAllSubseq(data);
+    //   }
+    // } else {
+    //   for (size_t i = 0; i < n; i++) {+
+    //     aux = solution.sequence[bestOrOp.i];
+    //     solution.sequence.erase(solution.sequence.begin() + bestOrOp.i);
+    //     solution.sequence.insert(solution.sequence.begin() + bestOrOp.j, aux);
+    //     solution.UpdateAllSubseq(data);
+    //   }
+    // }
+    
+    // if (j >= i && j < i + n)
+    //   continue;
+    
+    // cerr << bestOrOp.i << "," << bestOrOp.j << " - " << n << "\n";
+    solution.sequence.pop_back();
+    // for (int k = 0; k < solution.sequence.size(); k++)
+    //   cerr << solution.sequence[k] << " ";
+    // cerr << "\n";
 
+    std::rotate(solution.sequence.begin(), solution.sequence.begin() + bestOrOp.i, solution.sequence.end());
+    // for (int k = 0; k < solution.sequence.size(); k++)
+    //   cerr << solution.sequence[k] << " ";
+    // cerr << "\n";
+
+    if (bestOrOp.i < bestOrOp.j)
+      std::rotate(solution.sequence.begin() + n, solution.sequence.begin() + bestOrOp.j-bestOrOp.i+1, solution.sequence.begin()+solution.sequence.size());
+    else
+      std::rotate(solution.sequence.begin() + n, solution.sequence.begin() + solution.sequence.size()+bestOrOp.j-bestOrOp.i+1, solution.sequence.end());
+    // for (int k = 0; k < solution.sequence.size(); k++)
+    //   cerr << solution.sequence[k] << " ";
+    // cerr << "\n";
+    
+    auto it = std::find(solution.sequence.begin(), solution.sequence.end(), 1);
+    std::rotate(solution.sequence.begin(), it, solution.sequence.end());
+    // for (int k = 0; k < solution.sequence.size(); k++)
+    //   cerr << solution.sequence[k] << " ";
+    // cerr << "\n";
+    solution.sequence.push_back(-1);
+
+    solution.UpdateAllSubseq(data);
     solution.cost = bestOrOp.cost;
+    
+    // solution.updateCost(data);
+    // if (bestOrOp.cost != solution.cost)
+    //   cerr << bestOrOp.cost << " " << solution.cost << "\n";
 
     return true;
   }
